@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnet": {
+            "value": {
+                "name": "cmarshall10450-databricks-vnet",
+                "addressPrefix": "10.119.0.0/16"
+            }
+        },
+        "subnets": {
+            "value": [{
+                    "name": "databricks-pub-snet",
+                    "addressPrefix": "10.119.172.0/25"
+                },
+                {
+                    "name": "databricks-priv-snet",
+                    "addressPrefix": "10.119.172.128/25"
+                }
+            ]
+        }
+    }
+}

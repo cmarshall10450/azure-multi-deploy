@@ -1,0 +1,55 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"vnet": {
+			"type": "object",
+			"defaultValue": {},
+			"metadata": {
+				"description": "VNet configuration"
+			}
+		},
+		"subnets": {
+			"type": "array",
+			"defaultValue": [],
+			"metadata": {
+				"description": "List of subnets"
+			}
+		},
+		"location": {
+			"type": "string",
+			"defaultValue": "[resourceGroup().location]",
+			"metadata": {
+				"description": "Location for all resources."
+			}
+		}
+	},
+	"variables": {},
+	"resources": [
+		{
+			"type": "Microsoft.Network/virtualNetworks",
+			"apiVersion": "2020-05-01",
+			"name": "[parameters('vnet').name]",
+			"location": "[parameters('location')]",
+			"properties": {
+				"addressSpace": {
+					"addressPrefixes": ["[parameters('vnet').addressPrefix]"]
+				}
+			}
+		},
+		{
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+			"apiVersion": "2020-05-01",
+			"location": "[parameters('location')]",
+			"name": "[concat(parameters('vnet').name, '/', parameters('subnets')[copyIndex('subnetLoop')].name)]",
+			"dependsOn": ["[parameters('vnet').name]"],
+			"copy": {
+				"name": "subnetLoop",
+				"count": "[length(parameters('subnets'))]"
+			},
+			"properties": {
+				"addressPrefix": "[parameters('subnets')[copyIndex('subnetLoop')].addressPrefix]"
+			}
+		}
+	]
+}

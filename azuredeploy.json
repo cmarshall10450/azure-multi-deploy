@@ -1,0 +1,61 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"sasToken": {
+			"type": "string",
+			"metadata": {
+				"description": "SAS Token for accessing the templates"
+			}
+		},
+		"resourceGroups": {
+			"type": "array",
+			"defaultValue": [],
+			"metadata": {
+				"description": "List of resource groups that should be created"
+			}
+		},
+		"deployments": {
+			"type": "array",
+			"defaultValue": [],
+			"metadata": {
+				"description": "List of deployment configurations"
+			}
+		}
+	},
+	"variables": {},
+	"resources": [
+		{
+			"type": "Microsoft.Resources/resourceGroups",
+			"apiVersion": "2020-06-01",
+			"name": "[parameters('resourceGroups')[copyIndex()].name]",
+			"copy": {
+				"name": "rgLoop",
+				"count": "[length(parameters('resourceGroups'))]"
+			},
+			"location": "[parameters('resourceGroups')[copyIndex()].location]"
+		},
+		{
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2019-10-01",
+			"name": "[parameters('deployments')[copyIndex()].name]",
+			"copy": {
+				"name": "deploymentLoop",
+				"count": "[length(parameters('deployments'))]"
+			},
+			"resourceGroup": "[parameters('deployments')[copyIndex()].resourceGroup]",
+			"dependsOn": ["rgLoop"],
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('deployments')[copyIndex()].templatePath, parameters('sasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parametersLink": {
+					"uri": "[concat(parameters('deployments')[copyIndex()].parametersPath, parameters('sasToken'))]",
+					"contentVersion": "1.0.0.0"
+				}
+			}
+		}
+	]
+}

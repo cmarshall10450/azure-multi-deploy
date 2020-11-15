@@ -1,0 +1,35 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceGroups": {
+            "value": [
+                {
+                    "name": "shared-rg",
+                    "location": "northeurope"
+                },
+                {
+                    "name": "networking-rg",
+                    "location": "northeurope"
+                }
+            ]
+        },
+        "deployments": {
+            "value": [
+                {
+                    "name": "SharedLinkedTemplate",
+                    "templatePath": "https://cmarshall10450.blob.core.windows.net/templates/shared/azuredeploy.json",
+                    "parametersPath": "https://cmarshall10450.blob.core.windows.net/templates/shared/azuredeploy.parameters.json",
+                    "resourceGroup": "shared-rg"
+                },
+                {
+                    "name": "NetworkingLinkedTemplate",
+                    "templatePath": "https://cmarshall10450.blob.core.windows.net/templates/networking/azuredeploy.json",
+                    "parametersPath": "https://cmarshall10450.blob.core.windows.net/templates/networking/azuredeploy.parameters.json",
+                    "dependsOn": ["SharedLinkedTemplate"],
+                    "resourceGroup": "networking-rg"
+                }
+            ]
+        }
+    }
+}
